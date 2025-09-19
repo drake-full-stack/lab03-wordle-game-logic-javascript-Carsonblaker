@@ -130,13 +130,41 @@ function deleteLetter() {
 }
 
 // TODO: Implement submitGuess function
-// function submitGuess() {
-//     // Your code here!
-// }
+function submitGuess() {
+    logDebug(`📝 submitGuess() called`, 'info');
+   
+    if (currentTile !== 5) {
+        alert("Please enter 5 letters!");
+        return;
+    }
+    const currentRowElement = rows[currentRow];
+    const tiles = currentRowElement.querySelectorAll('.tile');
+    let guess = '';
+
+    tiles.forEach(tile => {
+        guess += tile.textContent;
+    });
+    //logDebug (`Guess: ${guess}, Target: ${TARGET_WORD}`, 'debug');
+    //checkGuess(guess,tiles);
+
+    currentRow++;
+    currentTile = 0;
+
+    if (guess === TARGET_WORD) {
+        gameOver = true;
+        logDebug('Game Status: PLAYER WON', 'success');
+        setTimeout(() => alert("Congrats! YOU WON"), 500);
+    
+    } else if (currentRow >= 6) {
+        gameOver = true;
+        logDebug(`Game Status: Player Lost. Correct Word ${TARGET_WORD}`, 'success');
+        setTimeout(() => alert(`GAMEOVER DIDNT GUESS THE WORD ${TARGET_WORD}.`), 500);
+    }
+ }
 
 // TODO: Implement checkGuess function (the hardest part!)
-// function checkGuess(guess, tiles) {
+function checkGuess(guess, tiles) {
 //     // Your code here!
 //     // Remember: handle duplicate letters correctly
 //     // Return the result array
-// }
+}
