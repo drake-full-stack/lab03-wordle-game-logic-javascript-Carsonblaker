@@ -91,26 +91,23 @@ function addLetter(letter) {
         logDebug("Row is Full Cannot Add letter", "ERROR");
         return;
     }
-    const rowElelment = rows[currentRow];
-    const tiles = rowElelment.querySelectorAll('.tile');
-
+    const rowElement = rows[currentRow];
+    const tiles = rowElement.querySelectorAll('.tile');
     const tile = tiles[currentTile];
 
-    tile.textContent = letter;
-
+    tile.textContent = letter;    
     tile.classList.add('filled');
-
     currentTile++;
 
-    console.log(`Letter added at row ${currentRow}, tile ${currentTile -1}.`, 'success');
-    console.log(`Current word: ${getCurrentWord()}`, 'info');
+    logDebug(`Letter added at row ${currentRow}, tile ${currentTile -1}.`, 'success');
+    logDebug(`Current word: ${getCurrentWord()}`, 'info');
 
 }
 
 // TODO: Implement deleteLetter function  
 function deleteLetter() {
     if(currentTile <= 0) {
-        logDebug("NO LETTERS TO DELETE", "ERORR");
+        logDebug("NO LETTERS TO DELETE", "ERROR");
         return;
     }
     currentTile--;
@@ -124,7 +121,7 @@ function deleteLetter() {
     tileToDelete.textContent = '';
     tileToDelete.classList.remove('filled');
 
-    console.log(`Letter Deleted at row ${currentRow}, tile ${currentTile -1}.`, 'success');
+    console.log(`Letter Deleted at row ${currentRow}, tile ${currentTile}.`, 'success');
     console.log(`Current word: ${getCurrentWord()}`, 'info');
 
 }
@@ -140,15 +137,14 @@ function submitGuess() {
     const currentRowElement = rows[currentRow];
     const tiles = currentRowElement.querySelectorAll('.tile');
     let guess = '';
-
-    tiles.forEach(tile => {
+     tiles.forEach(tile => {
         guess += tile.textContent;
     });
-    //logDebug (`Guess: ${guess}, Target: ${TARGET_WORD}`, 'debug');
-    //checkGuess(guess,tiles);
-
     currentRow++;
-    currentTile = 0;
+    currentTile = 0;    
+   
+    checkGuess(guess, tiles);
+
 
     if (guess === TARGET_WORD) {
         gameOver = true;
@@ -157,14 +153,43 @@ function submitGuess() {
     
     } else if (currentRow >= 6) {
         gameOver = true;
-        logDebug(`Game Status: Player Lost. Correct Word ${TARGET_WORD}`, 'success');
-        setTimeout(() => alert(`GAMEOVER DIDNT GUESS THE WORD ${TARGET_WORD}.`), 500);
+        logDebug(`Game Status: Player Lost. Correct Word: ${TARGET_WORD}`, 'fail');
+        setTimeout(() => alert(`GAMEOVER DIDNT GUESS THE WORD: ${TARGET_WORD}.`), 500);
     }
- }
-
+        
+}
 // TODO: Implement checkGuess function (the hardest part!)
 function checkGuess(guess, tiles) {
-//     // Your code here!
-//     // Remember: handle duplicate letters correctly
-//     // Return the result array
+    logDebug(`🔍 Starting analysis for "${guess}"`, 'info');
+    
+    // TODO: Split TARGET_WORD and guess into arrays
+    const target =  TARGET_WORD.split('');
+    const guessArray =  guess.split('');
+    const result = ['absent', 'absent', 'absent', 'absent', 'absent'];
+
+    // STEP 1: Find exact matches
+    for (let i = 0; i < 5; i++) {
+        if (guessArray[i] === target[i]) {
+            result[i] = 'correct';
+            target[i] = null;
+            guessArray[i] = null;
+        }
+    }
+    // STEP 2: Find wrong position matches  
+    for (let i = 0; i < 5; i++) {
+        if (guessArray[i] !== null) { 
+             const targetIndex = target.indexOf(guessArray[i]);
+           
+             if(targetIndex !== -1) {
+                result[i] = 'present';
+                target[targetIndex] = null;
+           
+    
+            }
+        }
+    }
+    for (let i = 0; i <5; i++) {
+     tiles[i].classList.add(result[i]);
+    }
+    return result;
 }
